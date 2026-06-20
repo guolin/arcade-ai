@@ -54,9 +54,13 @@ test('writeProject 拒绝路径遍历，不写到目录外', async () => {
 
 test('isSyncable：扩展白名单 + 防遍历 + 排除隐藏文件', () => {
   assert.ok(isSyncable('main.ts'));
+  assert.ok(isSyncable('main.py'));            // arcade 的 Python 表示，pxt.json 会引用
   assert.ok(isSyncable('tilemap.g.ts'));
+  assert.ok(isSyncable('tilemap.g.jres'));
+  assert.ok(isSyncable('images.g.ts'));
   assert.ok(isSyncable('tiles.g.jres'));
   assert.ok(isSyncable('assets.json'));
+  assert.ok(isSyncable('_palettes.json'));     // 自定义调色板，下划线开头但非隐藏
   assert.ok(isSyncable('README.md'));
   assert.ok(!isSyncable('evil.sh'));
   assert.ok(!isSyncable('.gitignore'));

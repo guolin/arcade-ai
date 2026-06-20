@@ -3,7 +3,7 @@ import { join, extname, basename } from 'node:path';
 
 // MakeCode arcade 项目文件按扩展名同步（项目文件都在项目根，无子目录）。
 // 这样 tilemap/命名资源生成的 *.g.ts / *.g.jres 也能完整往返，而不是被固定白名单丢弃。
-const SYNC_EXTS = new Set(['.ts', '.js', '.json', '.md', '.blocks', '.jres', '.txt']);
+const SYNC_EXTS = new Set(['.ts', '.js', '.py', '.json', '.md', '.blocks', '.jres', '.txt']);
 
 // 目录黑名单：依赖、产物，不参与同步。
 const SKIP_DIRS = new Set(['pxt_modules', 'built', 'node_modules', '.git']);
