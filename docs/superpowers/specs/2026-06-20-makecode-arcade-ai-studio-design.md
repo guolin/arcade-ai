@@ -119,12 +119,38 @@ my-game/
 
 ## 8. 第一版范围（YAGNI）
 
-**做**：三层结构、全量目录双向同步（含资源文件）、SSE→自动 reload iframe、4 坑固化进
-模板、内置精简参考手册、自检探针。
+**做**：两层结构（skill + `arcade-ai` 单包）、全量目录双向同步（含资源文件）、SSE→自动
+reload iframe、4 坑固化进模板、内置精简参考手册、自检探针、`aca init` 多格式规则文件
+生成、GitHub README 分工具安装片段。
 
 **不做（留 v2）**：握手后二次推送优化、实时抓官方文档、PNG→img 调色板转换器。
 
-## 9. 待办风险
+## 9. 分发与跨工具可移植
+
+核心价值放在**工具无关**的两块，各家的 "skill" 只是薄适配层：
+
+1. **npm 包 `arcade-ai`（CLI `aca`）** —— 任何能跑 shell 的 agent 都能用，零平台绑定。
+2. **一套工具无关的参考 markdown**（第 7 节 `reference/`）。
+
+**`aca init` 顺手生成对应工具的项目规则文件**（同一份内容，多格式输出）：
+
+| 目标工具 | skill 放置 | 项目规则文件 | 安装方式 |
+|----------|-----------|-------------|---------|
+| Claude Code | `~/.claude/skills/`（可全局） | `CLAUDE.md` | 插件市场 `/plugin marketplace add <repo>` |
+| Trae | `.trae/skills/<name>/SKILL.md`（项目级） | `project_rules.md` | Trae 添加 skill 流程 |
+| 通用兜底 / WorkBuddy | —（直接读规则文件） | `AGENTS.md` | 让 agent 读 `AGENTS.md` + `reference/` |
+
+要点：
+- `SKILL.md` 格式 Claude Code 与 Trae 通用，**内容可复用**，只是放置目录与安装入口不同。
+- **没有"贴链接全平台通吃"的安装**；每个工具按自己方式装。Claude Code 主路径是插件市场
+  （持久、每会话自动加载）；bootstrap 引导词可作可选快捷入口，但本质是执行安装脚本，且
+  只有真写进 skill 目录才对后续会话持久。
+- WorkBuddy（项目方自有 agent 平台）机制由其自定，建议直接复用工具无关核心：读 `AGENTS.md`
+  + `reference/`，调 `aca`。
+
+GitHub 仓库 README「使用方法」据此给出**分工具的安装片段**，而非单一链接。
+
+## 10. 待办风险
 
 - MakeCode postMessage 契约无正式版本承诺 → 靠自检探针缓解。
 - `game/` 全量回写需做并发/覆盖保护：编辑器回写与 AI 写盘可能撞车，需约定写盘时机
