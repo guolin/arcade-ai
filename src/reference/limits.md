@@ -13,7 +13,7 @@ Microsoft MakeCode Arcade 专为复古的 8-bit 和 16-bit 掌机设计。虽然
 
 ## 2. 内存与精灵数量限制
 
-在运行模拟器或部署在实体 Micro:bit / PyBadge 等微控制器硬件上时，面临着极度受限的运行资源：
+在运行模拟器或部署在实体 Arcade 硬件（如 PyGamer、PyBadge、Meowbit 等）上时，面临着极度受限的运行资源：
 - **精灵数量上限 (Sprite Count)**：
   通常在硬件上不建议同时存在超过 **30-50 个活动的精灵**，否则垃圾回收（Garbage Collection）和每帧碰撞检测会导致帧率骤降。
 - **内存限制 (Memory Limit)**：
