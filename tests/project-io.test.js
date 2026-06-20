@@ -54,7 +54,6 @@ test('writeProject 拒绝路径遍历，不写到目录外', async () => {
 
 test('isSyncable：扩展白名单 + 防遍历 + 排除隐藏文件', () => {
   assert.ok(isSyncable('main.ts'));
-  assert.ok(isSyncable('main.py'));            // arcade 的 Python 表示，pxt.json 会引用
   assert.ok(isSyncable('tilemap.g.ts'));
   assert.ok(isSyncable('tilemap.g.jres'));
   assert.ok(isSyncable('images.g.ts'));
@@ -62,9 +61,22 @@ test('isSyncable：扩展白名单 + 防遍历 + 排除隐藏文件', () => {
   assert.ok(isSyncable('assets.json'));
   assert.ok(isSyncable('_palettes.json'));     // 自定义调色板，下划线开头但非隐藏
   assert.ok(isSyncable('README.md'));
+  assert.ok(!isSyncable('main.py'));           // 纯 JS 工具：不同步 Python 转译产物
   assert.ok(!isSyncable('evil.sh'));
   assert.ok(!isSyncable('.gitignore'));
   assert.ok(!isSyncable('secret.env'));
   assert.ok(!isSyncable('../escape.ts'));
   assert.ok(!isSyncable('sub/x.ts'));
+});
+
+test('writeProject 清洗 pxt.json：从 files 剔除不同步的 main.py', async () => {
+  const dir = await tmp();
+  const pxt = JSON.stringify({
+    name: 'g', files: ['main.ts', 'main.py', 'README.md', 'assets.json'],
+  });
+  writeProject(dir, { 'pxt.json': pxt, 'main.py': 'print(1)' });
+  const onDisk = JSON.parse(await readFile(join(dir, 'pxt.json'), 'utf8'));
+  assert.ok(!onDisk.files.includes('main.py'), 'pxt.json files 不应再含 main.py');
+  assert.ok(onDisk.files.includes('main.ts'));
+  assert.ok(!existsSync(join(dir, 'main.py')), 'main.py 不应落盘');
 });
