@@ -5,18 +5,21 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import runInit from '../src/commands/init.js';
 
-test('init 生成 game 目录且固化四个坑', async () => {
+test('init 生成纯 TS 项目（真机验证后的正确格式）', async () => {
   const base = await mkdtemp(join(tmpdir(), 'aca-init-'));
   const dest = join(base, 'my-game');
   const code = await runInit({ positionals: [dest], options: {} });
   assert.equal(code, 0);
 
   const pxt = JSON.parse(await readFile(join(dest, 'game/pxt.json'), 'utf8'));
-  for (const f of ['README.md','main.ts','main.blocks','assets.json']) {
-    assert.ok(pxt.files.includes(f), `pxt.json files 缺 ${f}`);   // 坑2
+  // 纯 TS 工作流：files 必须含 main.ts，且不得含 main.blocks（否则编辑器开在空白积木视图）
+  for (const f of ['main.ts','README.md','assets.json']) {
+    assert.ok(pxt.files.includes(f), `pxt.json files 缺 ${f}`);
   }
+  assert.ok(!pxt.files.includes('main.blocks'), 'files 不应含 main.blocks（纯 TS 项目）');
+  assert.equal(pxt.preferredEditor, 'tsprj', 'preferredEditor 应为 tsprj');
   const assets = await readFile(join(dest, 'game/assets.json'), 'utf8');
-  assert.equal(assets.trim(), '{}');                              // 坑1
+  assert.equal(assets.trim(), '{}');                              // 空资源必须是合法 {}
   await readFile(join(dest, 'game/main.ts'), 'utf8');             // 存在即可
   await readFile(join(dest, 'package.json'), 'utf8');
 });
