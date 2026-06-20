@@ -1,0 +1,7 @@
+{
+  "name": "arcade-game-project",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "aca dev" },
+  "devDependencies": { "arcade-ai": "^0.1.0" }
+}
