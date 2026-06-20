@@ -24,7 +24,11 @@ export function startStudio({ gameDir, port = 0, hostHtmlPath }) {
         try {
           const { files } = JSON.parse(body || '{}');
           watcher.pause(600);
-          writeProject(gameDir, files);
+          const written = writeProject(gameDir, files);
+          const incoming = Object.keys(files || {});
+          const dropped = incoming.filter((f) => !written.includes(f));
+          console.log(`[save] 收到 ${incoming.length} 文件: ${incoming.join(', ')}`);
+          if (dropped.length) console.warn(`[save] ⚠️ 白名单外被丢弃: ${dropped.join(', ')}`);
           res.writeHead(200, { 'content-type': 'application/json' });
           res.end(JSON.stringify({ success: true }));
         } catch (e) {

@@ -22,6 +22,9 @@ test('init 生成纯 TS 项目（真机验证后的正确格式）', async () =>
   assert.equal(assets.trim(), '{}');                              // 空资源必须是合法 {}
   await readFile(join(dest, 'game/main.ts'), 'utf8');             // 存在即可
   await readFile(join(dest, 'package.json'), 'utf8');
+  // 知识库被拷进项目，项目自包含
+  await readFile(join(dest, 'reference/arcade-api.md'), 'utf8');
+  await readFile(join(dest, 'reference/pitfalls.md'), 'utf8');
 });
 
 import { stat } from 'node:fs/promises';

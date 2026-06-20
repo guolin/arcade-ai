@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const dir = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'reference');
+const dir = join(dirname(fileURLToPath(import.meta.url)), '..', 'reference');
 
 test('四份参考文档存在且非空', () => {
   for (const f of ['arcade-api.md','limits.md','pitfalls.md','project-format.md']) {

@@ -16,7 +16,14 @@ test('README 含三工具安装', () => {
   }
 });
 
-test('package.json files 含 src', () => {
+test('package.json files 含 src 与 reference', () => {
   const p = JSON.parse(readFileSync('package.json', 'utf8'));
   assert.ok(p.files.includes('src'));
+  assert.ok(p.files.includes('reference'), 'files 应含 reference（随包发布知识库）');
+});
+
+test('reference 与 SKILL.md 同级（构成完整 skill）', () => {
+  assert.ok(existsSync('SKILL.md'));
+  assert.ok(existsSync('reference/arcade-api.md'));
+  assert.ok(existsSync('reference/pitfalls.md'));
 });
