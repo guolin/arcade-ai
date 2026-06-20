@@ -20,3 +20,26 @@ test('init 生成 game 目录且固化四个坑', async () => {
   await readFile(join(dest, 'game/main.ts'), 'utf8');             // 存在即可
   await readFile(join(dest, 'package.json'), 'utf8');
 });
+
+import { stat } from 'node:fs/promises';
+
+test('init --tool claude 写 CLAUDE.md', async () => {
+  const base = await mkdtemp(join(tmpdir(), 'aca-tool-'));
+  const dest = join(base, 'g');
+  await runInit({ positionals: [dest], options: { tool: 'claude' } });
+  await stat(join(dest, 'CLAUDE.md'));
+});
+
+test('init 默认写 AGENTS.md', async () => {
+  const base = await mkdtemp(join(tmpdir(), 'aca-tool2-'));
+  const dest = join(base, 'g');
+  await runInit({ positionals: [dest], options: {} });
+  await stat(join(dest, 'AGENTS.md'));
+});
+
+test('init --tool trae 写 .trae/project_rules.md', async () => {
+  const base = await mkdtemp(join(tmpdir(), 'aca-tool3-'));
+  const dest = join(base, 'g');
+  await runInit({ positionals: [dest], options: { tool: 'trae' } });
+  await stat(join(dest, '.trae/project_rules.md'));
+});
