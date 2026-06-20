@@ -42,14 +42,17 @@ MakeCode 云端。
 1. **Skill**（核心，装进 Claude Code）= 知识 + 编排：精简参考手册，以及教 AI"写哪、怎么
    起 studio、怎么查手册、遵守哪些限制、何时跑 check"的 SKILL.md / AGENTS.md。skill **不
    重复实现任何逻辑**，只调下面这个包的命令——单一事实源就是这个包。
-2. **单一 npm 包**（暂名 `arcade-ai`）= 脚手架模板 + studio 服务 + 自检，一个包全包。
-   命令只有三个：
+2. **单一 npm 包 `arcade-ai`**（CLI 命令 `aca`）= 脚手架模板 + studio 服务 + 自检，一个
+   包全包。命令只有三个：
 
    | 命令 | 作用 |
    |------|------|
-   | `init [dir]` | 起脚手架：**纯拷贝静态模板**，4 个坑预置好。不装 pxt、不跑本地编译。 |
-   | `dev` | 起 studio：watch `game/` + 宿主页 + SSE + iframe 嵌官方编辑器。开发循环。 |
-   | `check` | 自检探针：puppeteer 跑握手 + save 往返，确认协议仍通。 |
+   | `aca init [dir]` | 起脚手架：**纯拷贝静态模板**，4 个坑预置好。不装 pxt、不跑本地编译。 |
+   | `aca dev` | 起 studio：watch `game/` + 宿主页 + SSE + iframe 嵌官方编辑器。开发循环。 |
+   | `aca check` | 自检探针：puppeteer 跑握手 + save 往返，确认协议仍通。 |
+
+   命名：包名 `arcade-ai` 直白可搜（arcade + ai）；`makecode` 不进包名（微软商标），只放
+   `description` / `keywords`。CLI 短命令 `aca`（ArCade Ai）。
 
 > 取舍：原先拆"运行时包 + CLI 薄壳"两个包是过度设计，合并为单包。把分层落在"知识
 > (skill) / 实现(npm 包)"，而非在"脚手架 or CLI"里二选一。
@@ -71,8 +74,7 @@ my-game/
     main.blocks         # 合法空积木
     assets.json         # "{}"（避坑 1）；精灵/地图（4-bit 16 色）作为独立资源存这里
     README.md
-  studio/               # 仅依赖 arcade-ai-studio
-  package.json          # scripts.studio = "arcade-ai-studio ./game"
+  package.json          # devDependencies: arcade-ai；scripts.dev = "aca dev"
   AGENTS.md             # 给 AI 的项目规则：写哪、限制、怎么验证
 ```
 
