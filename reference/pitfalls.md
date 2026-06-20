@@ -25,6 +25,14 @@
 * **原因**：微软官方在线版会安全过滤或缓存拦截带有 `index.html` 路径的请求。
 * **解决**：iframe.src 请求应当使用纯净的根域名路径，即 `https://arcade.makecode.com/?controller=1`（不要带 `index.html`）。
 
+### 5. ⚠️ tilemap 用内联 `img` 当图块 → 编辑器崩溃（实测确认）
+* **现象**：`tiles.createTilemap(hex`...`, img`...`, [tileA, tileB], TileScale.Sixteen)` 里把 `tileA/tileB` 写成**内联 `img` 变量**，编辑器加载后崩溃，弹 "Oops, we detected a problem..." 并不断重载。
+* **原因**：编辑器的 tilemap 字段编辑器会尝试把 `createTilemap` 反编译成可视化地图控件，它只认**命名图块资源**（`myTiles.xxx` / 内置 `sprites.castle.xxx`），遇到随手写的内联 img 图块就解析崩溃。
+* **解决**：地图走两条可靠路线之一（见 arcade-api.md 第 7 节）：
+  1. **命名地图** `tiles.setTilemap(tilemap`level`)`——编辑器自动创建空地图，人画好后同步回磁盘；
+  2. **内置图块** `createTilemap(..., [sprites.castle.tileGrass1, ...], ...)`——图块用自带图库，不要内联 img。
+* **补充**：图块/地图数据最终以 base64 的 F4 图片格式存进 `tilemap.g.jres`，由 `tilemap.g.ts` 声明命名空间——这些是编辑器生成的，AI 不要手写 jres。
+
 ---
 
 ## postMessage 协议字段参考

@@ -23,6 +23,8 @@ description: Use when building or modifying a Microsoft MakeCode Arcade game —
 - **纯 TS 项目**：`game/` 里不要 `main.blocks`，`pxt.json` 的 `files` 也不列它，
   `preferredEditor` 用 `tsprj`。否则编辑器会开在空白积木视图、看不到代码。
 - `assets.json` 必须是合法 JSON（空资源写 `{}`），不要清空成空文件。
+- **地图**：用命名地图 `tiles.setTilemap(tilemap`level`)`（编辑器自动建、人可画、自动同步回磁盘），
+  或 `createTilemap` 配**内置图块**（`sprites.castle.*`）。❌ 别把内联 `img` 当图块塞进 `createTilemap`，会崩。
 - 不臆造 arcade 不存在的 API。
 
 ## 查文档（按需读，不要全量背）

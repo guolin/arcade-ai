@@ -95,28 +95,36 @@
   `info.startCountdown(30)` (30秒)
   `info.onCountdownEnd(function() { game.over(false) })`
 
-## 7. Advanced Programmatic Tilemaps (Dynamic Generation)
-When generating tilemaps via code (bypassing the visual editor):
-- **Buffer Allocation**: Allocate a buffer of size `4 + (cols * rows)` bytes.
-  - Byte 0-1: Map width (cols) as 16-bit little-endian integer (`NumberFormat.Int16LE`).
-  - Byte 2-3: Map height (rows) as 16-bit little-endian integer (`NumberFormat.Int16LE`).
-  - Byte 4+: 1-byte tile index corresponding to your tileset array.
-- **Wall Map (Collisions)**: Use an `Image` of size `cols * rows`. Any **non-transparent pixel** marks a solid wall (color `2`/red is just the editor's display convention; any non-zero color works).
-- **Instantiation**:
-  ```typescript
-  const data = Buffer.create(4 + cols * rows);
-  data.setNumber(NumberFormat.Int16LE, 0, cols);
-  data.setNumber(NumberFormat.Int16LE, 2, rows);
-  
-  const wallImage = image.create(cols, rows);
-  // Set tile index
-  data.setUint8(4 + (row * cols) + col, tileIndex);
-  // Set solid wall
-  wallImage.setPixel(col, row, 2);
-  
-  const myTilemap = tiles.createTilemap(data, wallImage, [tileAir, tileBrick, tileSpike], TileScale.Sixteen);
-  tiles.setCurrentTilemap(myTilemap);
-  ```
+## 7. 地图 Tilemap（两条可靠路线，外加一个会崩的禁区）
+
+> ⚠️ **禁区**：`tiles.createTilemap(hex`...`, img`...`, [内联 img tile], ...)` —— **把内联 `img` 当图块会让官方编辑器崩溃**（Oops 重载循环）。编辑器的 tilemap 解析器只接受“命名图块资源”，不接受随手写的内联 img。已实测确认。详见 pitfalls 坑5。
+
+### 路线 A（推荐，AI + 人协作）：命名地图 `tilemap`level``
+AI 在代码里引用一个命名地图；编辑器首次打开会**自动创建一张可编辑的空地图**，人在网页地图编辑器里画好后，自动同步回磁盘（`tilemap.g.ts` / `tilemap.g.jres`）并随游戏运行、可反复改。
+```typescript
+tiles.setTilemap(tilemap`level`)     // level 不存在时编辑器会自动创建
+scene.cameraFollowSprite(mySprite)
+```
+
+### 路线 B（纯代码，用内置图块）：`createTilemap` + **内置 tile**
+图块用 MakeCode 自带的图库（真资源，不会崩），而不是内联 img：
+```typescript
+const data = Buffer.create(4 + cols * rows);
+data.setNumber(NumberFormat.Int16LE, 0, cols);   // 宽
+data.setNumber(NumberFormat.Int16LE, 2, rows);   // 高
+data.setUint8(4 + row * cols + col, tileIndex);  // 每格图块索引（0 起，指向下面数组）
+const walls = image.create(cols, rows);          // 墙体层：非透明像素=墙
+const tm = tiles.createTilemap(
+    data, walls,
+    [sprites.castle.tileGrass1, sprites.castle.tilePath5],  // 内置图块，非内联 img
+    TileScale.Sixteen);
+tiles.setCurrentTilemap(tm);
+```
+
+### 内置图库（直接按名引用，无需手画/手写 jres）
+- `sprites.castle.*` —— 草地/路/石头/房子等：`tileGrass1`、`tileGrass2`、`tileDarkGrass2`、`tilePath5`、`rock0`、`houseBlue` …
+- 还有 `sprites.dungeon.*`、`sprites.builtin.*`、`sprites.food.*`、`sprites.vehicle.*` 等多个图库。
+- **确切名字以编辑器里的图库(image gallery)为准**——打开精灵/地图编辑器点“Gallery”即可浏览全部，别凭记忆臆造名字。
 
 ## 8. Looping Background Music & Custom Melodies
 - **Play Custom Notes Looping**: Use `music.stringPlayable` and `music.PlaybackMode.LoopingInBackground`.
