@@ -94,3 +94,57 @@
 - **倒计时**：
   `info.startCountdown(30)` (30秒)
   `info.onCountdownEnd(function() { game.over(false) })`
+
+## 7. Advanced Programmatic Tilemaps (Dynamic Generation)
+When generating tilemaps via code (bypassing the visual editor):
+- **Buffer Allocation**: Allocate a buffer of size `4 + (cols * rows)` bytes.
+  - Byte 0-1: Map width (cols) as 16-bit little-endian integer (`NumberFormat.Int16LE`).
+  - Byte 2-3: Map height (rows) as 16-bit little-endian integer (`NumberFormat.Int16LE`).
+  - Byte 4+: 1-byte tile index corresponding to your tileset array.
+- **Wall Map (Collisions)**: Use an `Image` of size `cols * rows` where color index `2` (red) represents a solid wall.
+- **Instantiation**:
+  ```typescript
+  const data = Buffer.create(4 + cols * rows);
+  data.setNumber(NumberFormat.Int16LE, 0, cols);
+  data.setNumber(NumberFormat.Int16LE, 2, rows);
+  
+  const wallImage = image.create(cols, rows);
+  // Set tile index
+  data.setUint8(4 + (row * cols) + col, tileIndex);
+  // Set solid wall
+  wallImage.setPixel(col, row, 2);
+  
+  const myTilemap = tiles.createTilemap(data, wallImage, [tileAir, tileBrick, tileSpike], TileScale.Sixteen);
+  tiles.setCurrentTilemap(myTilemap);
+  ```
+
+## 8. Looping Background Music & Custom Melodies
+- **Play Custom Notes Looping**: Use `music.stringPlayable` and `music.PlaybackMode.LoopingInBackground`.
+  ```typescript
+  music.play(
+      music.stringPlayable("E G A G C5 B A G ", 120),
+      music.PlaybackMode.LoopingInBackground
+  );
+  ```
+- **Stop All Sounds**: `music.stopAllSounds()`
+
+## 9. Collisions & Overlap Events
+- **Scene Wall Collision Event**: Triggered when a sprite hits a tilemap wall:
+  ```typescript
+  scene.onHitWall(SpriteKind.Enemy, function(enemy: Sprite, location: tiles.Location) {
+      enemy.vx = -enemy.vx; // Bounce back
+  });
+  ```
+- **Sprite Overlap Event**:
+  ```typescript
+  sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function(player: Sprite, enemy: Sprite) {
+      // Logic here
+  });
+  ```
+- **Tile Overlap Event**:
+  ```typescript
+  scene.onOverlapTile(SpriteKind.Player, tileSpike, function(player: Sprite, location: tiles.Location) {
+      // Logic here (e.g. respawn player)
+  });
+  ```
+

@@ -27,8 +27,8 @@ export function startStudio({ gameDir, port = 0, hostHtmlPath }) {
           const written = writeProject(gameDir, files);
           const incoming = Object.keys(files || {});
           const dropped = incoming.filter((f) => !written.includes(f));
-          console.log(`[save] 收到 ${incoming.length} 文件: ${incoming.join(', ')}`);
-          if (dropped.length) console.warn(`[save] ⚠️ 白名单外被丢弃: ${dropped.join(', ')}`);
+          console.log(`[save] 收到 ${incoming.length} 文件，落盘 ${written.length}`);
+          if (dropped.length) console.warn(`[save] ⚠️ 未同步（扩展不支持/不安全）: ${dropped.join(', ')}`);
           res.writeHead(200, { 'content-type': 'application/json' });
           res.end(JSON.stringify({ success: true }));
         } catch (e) {
