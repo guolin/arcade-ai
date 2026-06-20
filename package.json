@@ -9,5 +9,5 @@
   "files": ["bin", "src", "SKILL.md", "README.md"],
   "dependencies": { "chokidar": "^3.6.0" },
   "optionalDependencies": { "puppeteer": "^22.0.0" },
-  "scripts": { "test": "node --test" }
+  "scripts": { "test": "node --test --test-concurrency=1 tests/*.test.js" }
 }
