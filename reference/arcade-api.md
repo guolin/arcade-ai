@@ -101,7 +101,7 @@ When generating tilemaps via code (bypassing the visual editor):
   - Byte 0-1: Map width (cols) as 16-bit little-endian integer (`NumberFormat.Int16LE`).
   - Byte 2-3: Map height (rows) as 16-bit little-endian integer (`NumberFormat.Int16LE`).
   - Byte 4+: 1-byte tile index corresponding to your tileset array.
-- **Wall Map (Collisions)**: Use an `Image` of size `cols * rows` where color index `2` (red) represents a solid wall.
+- **Wall Map (Collisions)**: Use an `Image` of size `cols * rows`. Any **non-transparent pixel** marks a solid wall (color `2`/red is just the editor's display convention; any non-zero color works).
 - **Instantiation**:
   ```typescript
   const data = Buffer.create(4 + cols * rows);
