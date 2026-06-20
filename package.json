@@ -1,0 +1,13 @@
+{
+  "name": "arcade-ai",
+  "version": "0.1.0",
+  "description": "AI-driven scaffold and live studio for Microsoft MakeCode Arcade games",
+  "keywords": ["makecode", "arcade", "ai", "game", "pixel", "education"],
+  "type": "module",
+  "bin": { "aca": "bin/aca.js" },
+  "engines": { "node": ">=18.0.0" },
+  "files": ["bin", "src", "SKILL.md", "README.md"],
+  "dependencies": { "chokidar": "^3.6.0" },
+  "optionalDependencies": { "puppeteer": "^22.0.0" },
+  "scripts": { "test": "node --test" }
+}
