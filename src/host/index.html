@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>arcade-ai studio</title>
+<style>html,body{margin:0;height:100%}iframe{width:100%;height:100%;border:0}</style></head>
+<body>
+<iframe id="mc" src="https://arcade.makecode.com/?controller=1"
+  sandbox="allow-popups allow-forms allow-scripts allow-same-origin"
+  allow="autoplay; gamepad; midi"></iframe>
+<script>
+const iframe = document.getElementById('mc');
+
+window.addEventListener('message', async (event) => {
+  if (event.source !== iframe.contentWindow) return;
+  const msg = event.data; if (!msg) return;
+
+  if (msg.type === 'pxthost' && msg.action === 'workspacesync') {
+    const data = await (await fetch('/api/project')).json();
+    msg.projects = [{
+      header: {
+        id: 'arcade-ai-project', name: 'arcade-game',
+        modificationTime: Date.now(), recentUse: Date.now(),
+        target: 'arcade', editor: 'blocksprj'        // 坑3
+      },
+      text: data.files
+    }];
+    iframe.contentWindow.postMessage(msg, '*');
+  }
+
+  if (msg.type === 'pxthost' && msg.action === 'workspacesave') {
+    const project = msg.project;
+    if (project && project.text) {
+      await fetch('/api/save', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ files: project.text })
+      });
+    }
+  }
+});
+
+// 文件被外部（AI）改动 → 自动 reload iframe，重走 workspacesync（已验证路径）
+const es = new EventSource('/events');
+es.onmessage = (e) => { if (e.data === 'changed') iframe.src = iframe.src; };
+</script>
+</body>
+</html>
