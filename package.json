@@ -1,6 +1,6 @@
 {
   "name": "arcade-ai",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "AI-driven scaffold and live studio for Microsoft MakeCode Arcade games",
   "keywords": [
     "makecode",

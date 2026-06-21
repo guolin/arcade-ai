@@ -1,6 +1,6 @@
 import { parseArgs as nodeParseArgs } from 'node:util';
 
-const COMMANDS = { init: 'init', dev: 'dev', check: 'check' };
+const COMMANDS = { init: 'init', dev: 'dev', check: 'check', clone: 'clone' };
 
 export function parseArgs(argv) {
   const { values, positionals } = nodeParseArgs({
@@ -20,9 +20,10 @@ export function parseArgs(argv) {
 
 const HELP = `arcade-ai (aca)
 用法:
-  aca init [dir] [--template blank|platformer|flappy] [--tool claude|trae|agents]   起脚手架（默认: blank）
-  aca dev  [--port 8080]                                                        起本地 studio
-  aca check [--url <makecode-url>]                                              自检 postMessage 协议`;
+  aca init  [dir] [--template blank|platformer|flappy] [--tool claude|trae|agents]  起脚手架（默认: blank）
+  aca clone <分享链接> [dir] [--tool claude|trae|agents]                             复刻分享链接的项目
+  aca dev   [--port 8080]                                                            起本地 studio
+  aca check [--url <makecode-url>]                                                   自检 postMessage 协议`;
 
 export async function run(argv) {
   const { command, positionals, options } = parseArgs(argv);

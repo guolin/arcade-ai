@@ -11,7 +11,7 @@ description: Use when building or modifying a Microsoft MakeCode Arcade game —
 ## 何时用
 - 用户想做 / 改 arcade 游戏、像素小游戏、makecode 游戏时。
 
-## 怎么用（三个命令）
+## 怎么用（四个命令）
 1. 起项目：`npx arcade-ai init <dir> [--template blank|platformer|flappy] [--tool claude|trae|agents]`
 
    **执行 init 前，先问用户想做哪种游戏，根据回答选模板：**
@@ -20,9 +20,16 @@ description: Use when building or modifying a Microsoft MakeCode Arcade game —
    - `--template flappy`：Flappy Bird 风格，管道障碍 + 重力下坠，推荐单一机制练习。
 
    生成纯 TS 脚手架，并把规则文件与 `reference/` 一并拷进项目。
-2. 起 studio：在项目目录 `npx aca dev` —— 浏览器实时预览，AI 改 `game/main.ts` 自动刷新；
+2. 复刻分享项目：`npx aca clone <分享链接> [dir] [--tool claude|trae|agents]`
+   - 支持 `https://makecode.com/_XXXXX` 短链和 `https://arcade.makecode.com/数字-ID` 两种格式。
+   - Blocks 或 Python 项目自动转为纯 TS：删除 `main.blocks`/`main.py`，`preferredEditor` 改为 `tsprj`。
+   - 目录名默认取项目名称的 slug。
+3. 起 studio：在项目目录 `npx aca dev` —— 浏览器实时预览，AI 改 `game/main.ts` 自动刷新；
    在编辑器里改代码/画精灵也会回写磁盘（双向）。
-3. 协议自检：`npx aca check` —— 验证官方编辑器握手 + 代码真渲染（联网，需 puppeteer）。
+4. 协议自检：`npx aca check` —— 验证官方编辑器握手 + 代码真渲染（联网，需 puppeteer）。
+
+> **Blocks / Python 项目提示**：`clone` 后 `main.ts` 是自动转换的 TypeScript，可读性较差。
+> 建议克隆完成后让 AI 先整理代码结构（重命名变量、拆函数），再开始修改游戏逻辑。
 
 ## 接手项目时必须先读文档
 拿到一个 arcade 项目（或准备写代码）时，**第一步读以下文件，不要跳过**：
