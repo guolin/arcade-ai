@@ -1,7 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
-<head><meta charset="utf-8"><title>arcade-ai studio</title>
-<style>html,body{margin:0;height:100%}iframe{width:100%;height:100%;border:0}</style></head>
+<html><head><meta charset="utf-8"><title>arcade-ai studio</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, iframe { width: 100%; height: 100%; border: 0; display: block; }
+</style>
+</head>
 <body>
 <iframe id="mc" src="https://arcade.makecode.com/?controller=1"
   sandbox="allow-popups allow-forms allow-scripts allow-same-origin"
@@ -19,7 +22,7 @@ window.addEventListener('message', async (event) => {
       header: {
         id: 'arcade-ai-project', name: 'arcade-game',
         modificationTime: Date.now(), recentUse: Date.now(),
-        target: 'arcade', editor: 'tsprj'        // JS 视图：AI 写的是 main.ts，须开在 TS 编辑器
+        target: 'arcade', editor: 'tsprj'
       },
       text: data.files
     }];
@@ -35,11 +38,30 @@ window.addEventListener('message', async (event) => {
       });
     }
   }
+
+  if (msg.type === 'pxthost' && msg.action === 'editorcontentloaded') {
+    clearTimeout(window.__compileTimer);
+    window.__compileTimer = setTimeout(() => {
+      fetch('/api/compile-result', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ success: false, reason: 'timeout: no run message within 30s' })
+      });
+    }, 30000);
+  }
+
+  if (msg.type === 'run') {
+    clearTimeout(window.__compileTimer);
+    fetch('/api/compile-result', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ success: true })
+    });
+  }
 });
 
-// 文件被外部（AI）改动 → 自动 reload iframe，重走 workspacesync（已验证路径）
 const es = new EventSource('/events');
-es.onmessage = (e) => { if (e.data === 'changed') iframe.src = iframe.src; };
+es.onmessage = (e) => {
+  if (e.data === 'changed') iframe.src = iframe.src;
+};
 </script>
 </body>
 </html>
