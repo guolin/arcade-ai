@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "arcade-ai": {
+      "source": "/home/guolin/workspace/pxt",
+      "sourceType": "local",
+      "computedHash": "226a96548f7eafa03e681940081df8b12bcd9974d775781976078c29551a8a98"
+    }
+  }
+}

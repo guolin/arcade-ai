@@ -21,14 +21,25 @@ function writeRules(dest, tool) {
   writeFileSync(target, content, 'utf8');
 }
 
+const TEMPLATES = ['platformer', 'flappy', 'blank'];
+const DEFAULT_TEMPLATE = 'blank';
+
 export default async function init(ctx) {
   const dest = ctx.positionals[0] || 'arcade-game';
+  const tpl = ctx.options.template || DEFAULT_TEMPLATE;
+
+  if (!TEMPLATES.includes(tpl)) {
+    console.error(`未知模板: ${tpl}，可选: ${TEMPLATES.join(', ')}`);
+    return 1;
+  }
+
   mkdirSync(dest, { recursive: true });
-  cpSync(join(templateDir, 'game'), join(dest, 'game'), { recursive: true });
+  // 每个模板是完整的 game/ 目录，直接拷贝
+  cpSync(join(templateDir, tpl, 'game'), join(dest, 'game'), { recursive: true });
   copyFileSync(join(templateDir, 'package.json'), join(dest, 'package.json'));
   // 把知识库拷进项目，使其自包含、跨工具可查（Trae/其它 AI 裸读项目也能用）
   cpSync(referenceDir, join(dest, 'reference'), { recursive: true });
   writeRules(dest, ctx.options.tool);
-  console.log(`✅ 已创建 ${dest}\n  cd ${dest} && npx aca dev`);
+  console.log(`✅ 已创建 ${dest}（模板: ${tpl}）\n  cd ${dest} && npx aca dev`);
   return 0;
 }

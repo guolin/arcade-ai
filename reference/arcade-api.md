@@ -85,6 +85,8 @@
 ## 6. 游戏信息 (Info)
 处理分数、生命值和计时器。
 
+> **重要**：以下 API 调用后，Arcade HUD 会**自动在屏幕角落渲染分数、心形血条、倒计时**，无需写任何显示代码。不要用 `game.showLongText` 或自定义 sprite 手搓 UI——那是重复造轮子。
+
 - **设置/修改分数**：
   `info.setScore(0)`
   `info.changeScoreBy(10)`
@@ -94,6 +96,23 @@
 - **倒计时**：
   `info.startCountdown(30)` (30秒)
   `info.onCountdownEnd(function() { game.over(false) })`
+
+## 6b. 持久化存储与历史最高分 (Settings)
+MakeCode Arcade 提供 `settings` 命名空间，数据持久化到设备 flash（浏览器模拟器对应 localStorage）。
+
+```typescript
+// 历史最高分示例
+const best = settings.readNumber("highScore") || 0;
+if (info.score() > best) {
+    settings.writeNumber("highScore", info.score());
+}
+```
+
+- `settings.writeNumber(key, value)` / `settings.readNumber(key)`
+- `settings.writeString(key, value)` / `settings.readString(key)`
+- `settings.exists(key)` / `settings.remove(key)`
+
+> **没有内置排行榜 UI**：`settings` 只是 key-value 存储，多名玩家排行榜需要自己用 sprite/text 实现显示逻辑。
 
 ## 7. 地图 Tilemap（两条可靠路线，外加一个会崩的禁区）
 

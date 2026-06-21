@@ -9,6 +9,7 @@ export function parseArgs(argv) {
     strict: false,
     options: {
       tool: { type: 'string' },
+      template: { type: 'string' },
       port: { type: 'string' },
       url: { type: 'string' },
     },
@@ -19,9 +20,9 @@ export function parseArgs(argv) {
 
 const HELP = `arcade-ai (aca)
 用法:
-  aca init [dir] [--tool claude|trae|agents]   起脚手架
-  aca dev  [--port 8080]                        起本地 studio
-  aca check [--url <makecode-url>]              自检 postMessage 协议`;
+  aca init [dir] [--template blank|platformer|flappy] [--tool claude|trae|agents]   起脚手架（默认: blank）
+  aca dev  [--port 8080]                                                        起本地 studio
+  aca check [--url <makecode-url>]                                              自检 postMessage 协议`;
 
 export async function run(argv) {
   const { command, positionals, options } = parseArgs(argv);
