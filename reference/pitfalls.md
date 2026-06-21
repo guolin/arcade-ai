@@ -33,6 +33,34 @@
   2. **内置图块** `createTilemap(..., [sprites.castle.tileGrass1, ...], ...)`——图块用自带图库，不要内联 img。
 * **补充**：图块/地图数据最终以 base64 的 F4 图片格式存进 `tilemap.g.jres`，由 `tilemap.g.ts` 声明命名空间——这些是编辑器生成的，AI 不要手写 jres。
 
+### 6. ❌ AI 常见臆造 API —— 这些在 Arcade 里根本不存在
+
+AI 容易凭感觉写出听起来合理但 Arcade 没有的 API，导致红色报错。**遇到报错先对照这张表，再查 arcade-api.md。**
+
+| AI 写的（❌ 不存在） | 正确写法 | 备注 |
+|---|---|---|
+| `sprite.flipX = true` | `sprite.setFlag(SpriteFlag.FlipX, true)` | 翻转用 flag，不是属性赋值 |
+| `sprite.flipY = true` | `sprite.setFlag(SpriteFlag.FlipY, true)` | 同上 |
+| `sprite.flip(true)` | `sprite.setFlag(SpriteFlag.FlipX, true)` | 无 flip() 方法 |
+| `effects.xxx.createParticlesAt(x, y)` | `effects.xxx.startScreenAnimation(200)` | 全屏特效，无 createParticlesAt |
+| `sprite.collidesWith(other)` | `sprites.onOverlap(KindA, KindB, fn)` | 碰撞用事件，不是方法调用 |
+| `sprite.angle = 90` | Arcade 不支持精灵旋转 | 屏幕太小，无旋转 API |
+| `sprite.scale = 2` | `sprite.setScale(2, ScaleAnchor.Center)` | 缩放用 setScale() |
+| `scene.addSprite(s)` | `sprites.create(img, kind)` 已自动加入场景 | 无需手动 addSprite |
+| `music.playSound("...")` | `music.play(music.melodyPlayable(music.baDing), ...)` | 无字符串音效名，用内置常量 |
+| `music.playMelody("C D E", 120)` | `music.play(music.stringPlayable("C D E", 120), ...)` | playMelody 已废弃 |
+| `info.lives` | `info.life()` | 是函数调用不是属性 |
+| `info.score` | `info.score()` | 同上 |
+| `game.setBackgroundColor(c)` | `scene.setBackgroundColor(c)` | 在 scene 不在 game |
+| `tiles.setTilemap(...)` | `tiles.setCurrentTilemap(...)` | 函数名不同 |
+| `timer.setTimeout(fn, ms)` | `timer.after(ms, fn)` | 参数顺序且需要 timer 依赖 |
+| `controller.isPressed("A")` | `controller.A.isPressed()` | 用对象属性不用字符串 |
+| `sprites.randomTile(tile)` | `tiles.placeOnRandomTile(sprite, tile)` | 在 tiles 命名空间 |
+| `sprite.onCreate(fn)` | `sprites.onCreated(kind, fn)` | 全局事件，不是精灵方法 |
+| `story.dialog(text)` | `story.printDialog(text, x, y, w, h, ...)` | 需要完整参数 |
+
+**通用原则**：Arcade TypeScript API 和浏览器 JS / Node.js / Phaser 都不一样，**不要凭经验猜**。写前先查 `reference/arcade-api.md`；写完看 `.aca-status` 确认编译结果。
+
 ---
 
 ## postMessage 协议字段参考
