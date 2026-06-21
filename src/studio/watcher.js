@@ -3,7 +3,7 @@ import chokidar from 'chokidar';
 export function createWatcher(gameDir, onChange) {
   let pausedUntil = 0;
   let timer = null;
-  const watcher = chokidar.watch(gameDir, { ignoreInitial: true });
+  const watcher = chokidar.watch(gameDir, { ignoreInitial: true, ignored: /\.aca-status$/ });
   const fire = () => {
     if (Date.now() < pausedUntil) return;
     clearTimeout(timer);
