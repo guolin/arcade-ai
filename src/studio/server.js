@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { readProject, writeProject } from '../project-io.js';
 import { createWatcher } from './watcher.js';
 
@@ -14,6 +15,7 @@ export function startStudio({ gameDir, port = 0, hostHtmlPath }) {
   const clients = new Set();
   let lastAiWriteAt = 0;   // AI 写盘时刻
   let lastPushedHash = ''; // 最后一次推给编辑器的内容 hash
+  let lastCompileResult = null; // 最近一次编译结果
 
   const watcher = createWatcher(gameDir, () => {
     lastAiWriteAt = Date.now();
@@ -68,6 +70,30 @@ export function startStudio({ gameDir, port = 0, hostHtmlPath }) {
           res.writeHead(500); res.end(String(e));
         }
       });
+    } else if (req.method === 'POST' && url === '/api/compile-result') {
+      let body = '';
+      req.on('data', (c) => (body += c));
+      req.on('end', () => {
+        try {
+          const result = JSON.parse(body || '{}');
+          lastCompileResult = { ...result, at: Date.now() };
+          const ts = new Date().toISOString();
+          const status = result.success ? 'ok' : 'error';
+          // 写状态文件：AI 可用时间戳判断是否是自己改动后的结果
+          try { writeFileSync(join(gameDir, '.aca-status'), `${ts} ${status}\n`, 'utf8'); } catch { /* ignore */ }
+          if (result.success) {
+            console.log('[compile] ✅ 编译成功，模拟器已启动');
+          } else {
+            console.log('[compile] ❌ 编译失败（查看浏览器编辑器中的红色错误提示）');
+          }
+          // 通过 SSE 把编译结果推给所有监听者
+          for (const c of clients) c.write(`data: compile:${status}\n\n`);
+        } catch { /* ignore */ }
+        res.writeHead(204); res.end();
+      });
+    } else if (req.method === 'GET' && url === '/api/compile-result') {
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(JSON.stringify(lastCompileResult || { success: null }));
     } else if (req.method === 'GET' && url === '/events') {
       res.writeHead(200, {
         'content-type': 'text/event-stream',

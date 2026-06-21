@@ -10,3 +10,6 @@ built/
 
 # 真机试跑沙箱，不入库
 playground/
+
+# studio 编译状态文件（运行时生成，AI 读取用）
+.aca-status

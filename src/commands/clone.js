@@ -81,6 +81,7 @@ export default async function clone(ctx) {
     try {
       const pxt = JSON.parse(files['pxt.json']);
       pxt.preferredEditor = 'tsprj';
+      pxt.languageRestriction = 'javascript-only';
       pxt.files = (pxt.files || []).filter(f => f !== 'main.blocks' && f !== 'main.py');
       delete pxt.targetVersions;
       files['pxt.json'] = JSON.stringify(pxt, null, 4) + '\n';

@@ -37,10 +37,17 @@ description: Use when building or modifying a Microsoft MakeCode Arcade game —
 > 路径是 `<项目目录>/reference/`，不是 `docs/` 或其他位置。
 
 拿到一个 arcade 项目（或准备写代码）时，**第一步读以下文件，不要跳过**：
-- `reference/arcade-api.md` —— 精灵/控制器/地图/音乐/Info/动画/扩展等完整 API 速查
-- `reference/pitfalls.md` —— 哪些写法会翻车 + 臆造 API 对照表（踩坑成本极高）
-- `reference/limits.md` —— 内存/尺寸/功能硬限制
-- `reference/project-format.md` —— 文件格式约定（pxt.json / assets.json）
+- `reference/arcade-api.md` —— 完整 API 签名速查（sprites/game/scene/tiles/info/music/effects/extensions 全覆盖）
+- `reference/patterns.md` —— 89 款 playground 游戏提炼的代码模式，可直接复制（对象模型、platformer、debounce、Boss fiber、tilemap 出生点等）
+- `reference/pitfalls.md` —— 臆造 API 对照表 + 已知崩溃坑（动手前必扫）
+- `reference/limits.md` —— 硬件/内存/JS 语言限制
+- `reference/project-format.md` —— pxt.json / assets.json 格式
+
+读完文档后，**必须充分阅读当前游戏代码再动手**：
+- 先读 `game/main.ts` 的全局变量、`namespace SpriteKind`、初始化代码、事件注册、`game.onUpdate*`、`timer.*`。
+- 再读 `game/pxt.json` 的依赖和 `files`，确认扩展库是否存在，不要直接使用未声明扩展。
+- 如果有 `assets.json` / `*.g.ts` / `*.g.jres`，先确认已有资源名，再用 `assets.image\`name\``、`assets.tile\`name\``、`assets.tilemap\`name\`` 引用。
+- 修改前先理解现有函数分工和状态流，优先复用已有函数与 SpriteKind，不要重写一套平行结构。
 
 读完再动手，遇到不确认的 API 回来查，不要靠记忆臆造。
 
@@ -65,7 +72,7 @@ description: Use when building or modifying a Microsoft MakeCode Arcade game —
 - **纯 TS 项目**：`game/` 里不要 `main.blocks`，`pxt.json` 的 `files` 也不列它，
   `preferredEditor` 用 `tsprj`。否则编辑器会开在空白积木视图、看不到代码。
 - `assets.json` 必须是合法 JSON（空资源写 `{}`），不要清空成空文件。
-- **地图**：用命名地图 `tiles.setTilemap(tilemap`level`)`（编辑器自动建、人可画、自动同步回磁盘），
+- **地图**：用命名地图 `tiles.setCurrentTilemap(assets.tilemap`level`)`（编辑器自动建、人可画、自动同步回磁盘），
   或 `createTilemap` 配**内置图块**（`sprites.castle.*`）。❌ 别把内联 `img` 当图块塞进 `createTilemap`，会崩。
 - **不臆造 API**：`sprite.flipX`、`effects.xxx.createParticlesAt()` 等都不存在，写前查 pitfalls.md 第 6 节。
 
@@ -73,9 +80,10 @@ description: Use when building or modifying a Microsoft MakeCode Arcade game —
 
 > 文档由 `aca init` / `aca clone` 拷入**项目目录**的 `reference/` 下，不在 skill 目录。
 
-- `reference/arcade-api.md` —— 精灵/Image/控制器/地图/音乐/动画/扩展全 API
-- `reference/limits.md` —— 屏幕、调色板、内存、不支持的 JS 特性等硬限制
-- `reference/pitfalls.md` —— 已知坑 + 臆造 API 对照表（动手前务必扫一遍）
-- `reference/project-format.md` —— pxt.json / assets.json / 文件格式约定
+- `reference/arcade-api.md` —— 完整 API 签名（全 namespace，含 enum 速查）
+- `reference/patterns.md` —— 可直接复制的游戏模式代码（从真实游戏提取）
+- `reference/pitfalls.md` —— 错→对速查表（遇到编译报错先查这里）
+- `reference/limits.md` —— 硬件/内存/JS 限制
+- `reference/project-format.md` —— pxt.json / assets.json 格式
 
 写代码前，遇到不确定的 API 或限制就读对应文件，不要凭记忆。
